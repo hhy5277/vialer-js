@@ -9,7 +9,7 @@
             <icon name="recent"/>
         </div>
 
-        <div class="option contacts test-menubar-contacts" :class="classes('contacts')" @click="setLayer('contacts')">
+        <div class="option contacts test-menubar-contacts" :class="classes('contacts', true)" @click="setLayer('contacts')">
             <icon name="contacts"/>
         </div>
 
@@ -17,7 +17,7 @@
             <icon name="availability"/>
         </div>
 
-        <div class="option" v-for="module in customModules" @click="setLayer(module.menubarIcon)">
+        <div class="option" :class="classes(module.menubarIcon, module.menubarTransferHint)" v-for="module in customModules" @click="setLayer(module.menubarIcon)">
             <icon :name="module.menubarIcon"/>
         </div>
     </div>

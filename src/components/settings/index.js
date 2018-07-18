@@ -50,11 +50,13 @@ module.exports = (app) => {
                 }
             },
             save: function(e) {
-                app.setState({
-                    // Disable dnd after a save to keep condition checks simple.
-                    availability: {dnd: false},
-                    settings: this.settings,
-                }, {persist: true})
+                // Strip properties from the settings object that we don't
+                // want to update, because they are not part of a
+                // user-initiated setting.
+                let settings = app.utils.copyObject(this.settings)
+                delete settings.webrtc.account.options
+                // Disable dnd after a save to keep condition checks simple.
+                app.setState({availability: {dnd: false}, settings}, {persist: true})
 
                 // Update the vault settings.
                 app.setState({app: {vault: this.app.vault}}, {encrypt: false, persist: true})
@@ -144,8 +146,8 @@ module.exports = (app) => {
         },
         watch: {
             /**
-            * Change the sink for the ringtone when the selected
-            * ringtone device changes.
+            * Change the sink for the ringtone when the
+            * selected ringtone device changes.
             * @param {String} newSinkId - The selected sink for sounds.
             */
             'devices.sounds.selected.id': function(newSinkId) {

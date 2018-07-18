@@ -55,7 +55,7 @@ class Skeleton extends EventEmitter {
         // of manually.
         if (process.env.VERBOSE === true) this.verbose = true
         else this.verbose = false
-        this.logger.info(`${this}verbose mode: ${this.verbose}`)
+        this.logger.debug(`${this}verbose mode: ${this.verbose}`)
     }
 
 

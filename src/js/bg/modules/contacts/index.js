@@ -65,7 +65,7 @@ class ModuleContacts extends Module {
     */
     async _platformData() {
         for (const provider of this.providers) {
-            provider._platformData()
+            await provider._platformData()
         }
     }
 
@@ -98,6 +98,37 @@ class ModuleContacts extends Module {
         }
 
         Object.assign(moduleStore, {status: 'ready'})
+    }
+
+
+    _watchers() {
+        return {
+            'store.settings.wizard.completed': (completed) => {
+                if (completed) this.subscribe()
+            },
+        }
+    }
+
+
+    /**
+    * Subscribe here, so we are able to wait before a subscription
+    * is completed until going to the next. This prevents the platform
+    * server from being hammered.
+    */
+    async subscribe() {
+        const contacts = Object.keys(this.contacts)
+        this.app.logger.info(`${this}<platform> subscribe SIP presence to ${contacts.length} contacts`)
+        for (let contactId of contacts) {
+            const contact = this.contacts[contactId]
+            if (contact && ['registered', 'connected'].includes(this.app.state.calls.ua.status)) {
+                const endpoints = this.contacts[contactId].endpoints
+                for (let endpointId of Object.keys(endpoints)) {
+                    if (endpoints[endpointId].presence) {
+                        await endpoints[endpointId].presence.subscribe()
+                    }
+                }
+            }
+        }
     }
 
 

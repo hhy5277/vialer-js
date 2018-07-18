@@ -16,11 +16,6 @@
         margin-bottom: $spacer * 2;
         position: relative;
 
-        &:hover {
-            @include item-slider-activate;
-            cursor: pointer;
-        }
-
         .activity-icon {
             align-items: center;
             display: flex;
@@ -76,7 +71,6 @@
             align-items: center;
             display: flex;
             justify-content: left;
-            width: $spacer * 6;
 
             span {
                 background: $red-color;
@@ -84,7 +78,7 @@
                 color: $white;
                 font-size: 0.7rem;
                 font-weight: 500;
-                padding: $spacer / 4 $spacer / 2;
+                padding: $spacer / 4 $spacer;
                 text-transform: uppercase;
             }
         }

@@ -1,7 +1,7 @@
 <component class="component-voipaccount-picker">
     <!-- Platform integration allows the user to select a voip-account. -->
     <Field name="webrtc_account" type="select"
-        :disabled="!settings.webrtc.enabled"
+        :disabled="!settings.webrtc.toggle"
         :empty="(status === 'loading') ? `${$t('loading VoIP accounts')}...` : $t('no VoIP accounts')"
         :help="$t('voIP account to use as your softphone.')"
         :label="label" :model.sync="selected"
@@ -9,7 +9,7 @@
         :placeholder="$t('select a VoIP account')"
         :validation="validationField">
 
-        <button slot="select-extra" class="button is-link" :class="{'is-loading': status === 'loading'}" :disabled="status === 'loading'" @click="refreshVoipaccounts()">
+        <button slot="select-extra" class="button is-link" :class="{'is-loading': status === 'loading'}" :disabled="status === 'loading' || !settings.webrtc.toggle" @click="refreshVoipaccounts()">
             <span class="icon is-small"><icon name="refresh"/></span>
         </button>
 
@@ -30,7 +30,7 @@
                 </div>
 
                 <!-- Warn when the user is about to choose a voipaccouint with incorrect settings. -->
-                <div class="notification-box troubleshoot" v-if="selected.id && !validVoipSettings && settings.webrtc.enabled">
+                <div class="notification-box troubleshoot" v-if="selected.id && !validVoipSettings && settings.webrtc.toggle">
                     <header>
                         <icon name="warning"/><span class="cf">{{$t('voIP account adjustment required in')}} {{vendor.portal.name}}</span>
                     </header>

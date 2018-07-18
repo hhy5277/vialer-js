@@ -18,29 +18,29 @@
             </div>
         </header>
 
-        <div class="activity" v-for="activity of filteredActivity">
-            <div class="activity-icon" :class="classes('recent-status', activity)">
-                <icon :name="activity.type"/>
-            </div>
-            <div class="activity-info">
-                <header v-if="activity.contact">
-                    {{contacts[activity.contact].name}}
-                </header>
-                <header v-else>{{activity.number}}</header>
-                <footer>{{activity.date | fuzzydate}}</footer>
-            </div>
-            <div class="activity-label" v-if="activity.label">
-                <span>{{$t(activity.label)}}</span>
-            </div>
-
-            <div class="item-slider">
-                <div class="item-slider-option green cf" v-on:click="callRecent(activity)">
-                    {{$t('call')}}
-                    <icon name="phone-circle"/>
+        <div class="item-list">
+            <div class="activity item" v-for="activity of filteredActivity">
+                <div class="activity-icon" :class="classes('recent-status', activity)">
+                    <icon :name="activity.type"/>
                 </div>
-                <div class="item-slider-option grey cf" :class="classes('remind-button', activity)" v-on:click="toggleReminder(activity)">
-                    {{$t('reminder')}}
-                    <icon name="star-circle"/>
+                <div class="activity-info">
+                    <header v-if="activity.contact">
+                        {{contacts[activity.contact].name}}
+                    </header>
+                    <header v-else>{{activity.number}}</header>
+                    <footer>{{activity.date | fuzzydate}}</footer>
+                </div>
+                <div class="activity-label" v-if="activity.label">
+                    <span>{{$t(activity.label)}}</span>
+                </div>
+
+                <div class="item-options">
+                    <div class="item-option green cf" v-on:click="callRecent(activity)">
+                        <icon name="phone-circle"/>
+                    </div>
+                    <div class="item-option grey cf" :class="classes('remind-button', activity)" v-on:click="toggleReminder(activity)">
+                        <icon name="star-circle"/>
+                    </div>
                 </div>
             </div>
         </div>

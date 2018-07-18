@@ -22,12 +22,10 @@ module.exports = (app) => {
         methods: Object.assign({
             finish: function() {
                 app.setState({settings: {wizard: {completed: true, step: 0}}}, {persist: true})
-                app.emit('bg:calls:disconnect', {reconnect: true})
                 app.notify({icon: 'settings', message: this.$t('almost done! Please check your audio settings.'), type: 'info'})
             },
             nextStep: function() {
                 if (this.steps[this.step].name === 'voipaccount') {
-                    this.settings.webrtc.enabled = true
                     app.setState({
                         settings: {
                             webrtc: {

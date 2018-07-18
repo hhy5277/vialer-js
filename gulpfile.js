@@ -589,16 +589,21 @@ gulp.task('watch', 'Start development server and watch for changes.', () => {
         path.join(__dirname, 'src', 'scss', '**', '*.scss'),
         `!${path.join(__dirname, 'src', 'scss', 'observer.scss')}`,
         path.join(__dirname, 'src', 'components', '**', '*.scss'),
+        path.join(settings.NODE_PATH, 'vialer-js-module-*', 'src', '**', '*.scss'),
     ], ['scss-app'])
 
     gulp.watch(path.join(__dirname, 'src', 'scss', 'observer.scss'), ['scss-observer'])
     gulp.watch(path.join(__dirname, 'src', 'scss', 'vendor.scss'), ['scss-vendor'])
 
-    gulp.watch(path.join(__dirname, 'src', 'components', '**', '*.vue'), ['templates'])
+    gulp.watch([
+        path.join(__dirname, 'src', 'components', '**', '*.vue'),
+        path.join(settings.NODE_PATH, 'vialer-js-module-*', 'src', '**', '*.vue'),
+    ], ['templates'])
     gulp.watch(path.join(__dirname, 'src', 'js', 'i18n', '**', '*.js'), ['translations'])
     gulp.watch(path.join(__dirname, 'test', '**', '*.js'), ['test'])
 
     gulp.watch([
+        path.join(__dirname, 'src', 'js', '**', 'adapter.js'),
         path.join(__dirname, 'src', 'js', '**', 'provider.js'),
         path.join(settings.NODE_PATH, 'vialer-js-availability-*', 'index.js'),
         path.join(settings.NODE_PATH, 'vialer-js-user-*', 'index.js'),

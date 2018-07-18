@@ -108,35 +108,48 @@ class App extends Skeleton {
     * watchers from modules.
     * @param {Object} watchers - Store properties to watch for changes.
     */
-    async __initViewModel(watchers) {
+    async __initViewModel() {
+        this.logger.info(`${this}init viewmodel...`)
         const i18nStore = new I18nStore(this.state)
         Vue.use(i18n, i18nStore)
-        const languages = this.state.settings.language.options.map(i => i.id)
+
+        for (const [id, translation] of Object.entries(translations)) Vue.i18n.add(id, translation)
+
         let selectedLanguage = this.state.settings.language.selected.id
-        for (const [id, translation] of Object.entries(translations)) {
-            Vue.i18n.add(id, translation)
+
+        if (!selectedLanguage) {
+            let newLanguage
+            if (this.env.isBrowser) {
+                // Try to figure out the language from the environment.
+                // Check only the first part of en-GB/en-US.
+                newLanguage = this.state.settings.language.options.find((i) => i.id === navigator.language.split('-')[0])
+                if (newLanguage) {
+                    selectedLanguage = newLanguage.id
+                    this.setState({settings: {language: {selected: newLanguage}}})
+                }
+            }
+
+            // Fallback to English language as a last resort.
+            if (!newLanguage) {
+                newLanguage = this.state.settings.language.options[0]
+                selectedLanguage = newLanguage.id
+                this.setState({settings: {language: {selected: newLanguage}}})
+            }
         }
 
-        if (!selectedLanguage && this.env.isBrowser) selectedLanguage = navigator.language
-
-        if (!languages.includes(selectedLanguage)) selectedLanguage = 'en'
         this.logger.info(`${this}selected language: ${selectedLanguage}`)
         Vue.i18n.set(selectedLanguage)
 
-
         // Add a simple reference to the translation module.
         this.$t = Vue.i18n.translate
-
         this.vm = new Vue({
             data: {store: this.state},
             render: h => h(require('../../components/main')(this)),
-            watch: watchers,
         })
 
         // Sounds that are used in the application. Both
         // initialized in `AppForeground` and `AppBackground`.
         this.sounds = new Sounds(this)
-        await this.__initMedia()
     }
 
 
@@ -152,7 +165,7 @@ class App extends Skeleton {
 
     /**
     * A recursive method that merges two or more objects with
-    * nested objects together. Existing values from target are
+    * nesting together. Existing values from target are
     * overwritten by sources.
     * @param {Object} target - The store or a fragment of it.
     * @param {...*} sources - One or more objects to merge to target.
@@ -165,10 +178,14 @@ class App extends Skeleton {
         if (this.__isObject(target) && this.__isObject(source)) {
             for (const key in source) {
                 if (this.__isObject(source[key])) {
-                    if (!target[key]) Object.assign(target, { [key]: {} })
+                    if (!target[key]) Object.assign(target, {[key]: {}})
                     this.__mergeDeep(target[key], source[key])
+                } else if (Array.isArray(source[key])) {
+                    Object.assign(target, {[key]: source[key]})
                 } else {
-                    Object.assign(target, { [key]: source[key] })
+                    if (target[key] !== source[key]) {
+                        target[key] = source[key]
+                    }
                 }
             }
         }
@@ -187,28 +204,30 @@ class App extends Skeleton {
     * @param {String} [options.persist=false] - Whether to persist this state change.
     * @param {Object} state - An object to merge into the store.
     */
-    async __mergeState({action = 'upsert', encrypt = true, path = null, persist = false, state}) {
-        if (!path) this.__mergeDeep(this.state, state)
-        else {
-            path = path.split('.')
-            if (action === 'upsert') {
-                let _ref = this.__getKeyPath(this.state, path)
-                // Needs to be created first.
-                if (typeof _ref === 'undefined') {
-                    this.__setKeyPath(this.state, path, state)
-                } else {
-                    _ref = path.reduce((o, i)=>o[i], this.state)
-                    this.__mergeDeep(_ref, state)
-                }
-            } else if (action === 'delete') {
-                const _ref = path.slice(0, path.length - 1).reduce((o, i)=>o[i], this.state)
-                this.vm.$delete(_ref, path[path.length - 1])
-            } else if (action === 'replace') {
-                const _ref = path.slice(0, path.length - 1).reduce((o, i)=>o[i], this.state)
-                this.vm.$set(_ref, path[path.length - 1], state)
+    __mergeState({action = 'upsert', encrypt = true, path = null, persist = false, state}) {
+        if (!path) {
+            this.__mergeDeep(this.state, state)
+            return
+        }
+
+        path = path.split('.')
+        if (action === 'upsert') {
+            let _ref = this.__getKeyPath(this.state, path)
+            // Needs to be created first.
+            if (typeof _ref === 'undefined') {
+                this.__setKeyPath(this.state, path, state)
             } else {
-                throw new Error(`invalid path action for __mergeState: ${action}`)
+                _ref = path.reduce((o, i)=>o[i], this.state)
+                this.__mergeDeep(_ref, state)
             }
+        } else if (action === 'delete') {
+            const _ref = path.slice(0, path.length - 1).reduce((o, i)=>o[i], this.state)
+            this.vm.$delete(_ref, path[path.length - 1])
+        } else if (action === 'replace') {
+            const _ref = path.slice(0, path.length - 1).reduce((o, i)=>o[i], this.state)
+            this.vm.$set(_ref, path[path.length - 1], state)
+        } else {
+            throw new Error(`invalid path action for __mergeState: ${action}`)
         }
     }
 
@@ -310,10 +329,10 @@ class App extends Skeleton {
     * @param {Object} state - The state to update.
     * @param {Boolean} options - Whether to persist the changed state to localStorage.
     */
-    async setState(state, {action, encrypt, path, persist} = {}) {
+    setState(state, {action, encrypt, path, persist} = {}) {
         if (!action) action = 'upsert'
         // Merge state in the context of the executing script.
-        await this.__mergeState({action, encrypt, path, persist, state})
+        this.__mergeState({action, encrypt, path, persist, state})
         // Sync the state to the other script context(bg/fg).
         // Make sure that we don't pass a state reference over the
         // EventEmitter in case of a webview; this would create

@@ -154,7 +154,7 @@ class Crypto {
         const keydata = await crypto.subtle.exportKey('raw', aesKey)
         //returns the exported key data
         let base64Keydata = this.__dataArrayToBase64(keydata)
-        this.app.logger.info(`${this}exported AES-GCM session key`)
+        this.app.logger.debug(`${this}exported AES-GCM session key`)
         return base64Keydata
     }
 
@@ -370,7 +370,7 @@ class Crypto {
     * @param {String} password - The password to unlock local data with.
     * @param {Boolean} e2e - Whether to create an asymmetric encryption key.
     */
-    async loadIdentity(username, password, e2e = false) {
+    async initIdentity(username, password, e2e = false) {
         this.sessionKey = await this._generateVaultKey(username, password)
 
         if (!e2e) return
@@ -412,7 +412,7 @@ class Crypto {
     * @returns {String} - The base64-encoded vault key.
     */
     async storeVaultKey() {
-        this.app.logger.info(`${this}enabling auto session recovery`)
+        this.app.logger.debug(`${this}enable auto session recovery`)
         const sessionKey = await this.__exportAESKey(this.sessionKey)
         this.app.setState({app: {vault: {key: sessionKey}}}, {encrypt: false, persist: true})
         return sessionKey

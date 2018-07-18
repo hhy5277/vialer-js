@@ -265,6 +265,7 @@ class Helpers {
                 PORTAL_URL: this.settings.brands[brandName].vendor.portal.url,
                 SENTRY_DSN: this.settings.brands[brandName].telemetry.sentry.dsn,
                 SIP_ENDPOINT: this.settings.brands[brandName].sip_endpoint,
+                STUN: this.settings.brands[brandName].stun,
 
                 VENDOR_NAME: this.settings.brands[brandName].vendor.name,
                 VENDOR_SUPPORT_EMAIL: this.settings.brands[brandName].vendor.support.email,

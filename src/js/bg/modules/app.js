@@ -55,7 +55,7 @@ class ModuleApp extends Module {
             notifications: [],
             online: this._checkConnectivity(),
             session: {
-                active: null,
+                active: 'new',
                 available: [],
             },
             updated: false,

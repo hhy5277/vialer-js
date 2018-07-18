@@ -12,21 +12,25 @@
         }
 
         .welcome-message {
-            color: $grey-color-darker;
+            color: $grey-color;
             padding-bottom: $spacer * 3;
             padding-top: $spacer * 2;
 
             .session-name {
                 color: $brand-color;
-                font-size: 0.9rem;
                 font-style: italic;
             }
         }
     }
 
+    .buttons {
+        padding-bottom: $spacer;
+    }
+
     footer {
         color: $grey-color;
         font-size: 0.75rem;
+        margin-top: $spacer;
         text-align: center;
 
         .forgot-pw {
@@ -50,10 +54,6 @@
     }
 
 
-    .buttons {
-        padding-top: $spacer;
-    }
-
     .sessions {
         display: flex;
         flex-flow: row wrap;
@@ -63,10 +63,8 @@
 
         .new-session-text {
             color: $grey-color;
-            font-size: 0.8rem;
-            font-style: italic;
             margin-bottom: $spacer;
-            margin-top: $spacer / 2;
+            margin-top: $spacer * 2;
         }
 
         .new-session {

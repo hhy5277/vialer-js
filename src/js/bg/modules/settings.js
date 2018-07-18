@@ -39,8 +39,8 @@ class ModuleSettings extends Module {
             },
             language: {
                 options: [
-                    {id: 'nl', name: 'nederlands'},
                     {id: 'en', name: 'english'},
+                    {id: 'nl', name: 'nederlands'},
                 ],
                 selected: {id: null, name: null},
             },
@@ -100,6 +100,8 @@ class ModuleSettings extends Module {
                         selected: {id: 'AUDIO_NOPROCESSING', name: this.app.$t('audio without processing')},
                     },
                 },
+                stun: process.env.STUN,
+                toggle: true,
             },
             wizard: {
                 completed: false,
@@ -163,7 +165,7 @@ class ModuleSettings extends Module {
                 }
             },
             'store.settings.telemetry.enabled': (enabled) => {
-                this.app.logger.info(`${this}switching sentry exception monitoring to ${enabled}`)
+                this.app.logger.info(`${this}switching sentry exception monitoring ${enabled ? 'on' : 'off'}`)
                 if (enabled) {
                     const sentryDsn = this.app.state.settings.telemetry.sentryDsn
                     Raven.config(sentryDsn, {
@@ -180,29 +182,25 @@ class ModuleSettings extends Module {
             /**
             * Deal with (de)selection of an account by connecting or disconnecting
             * from the Calls endpoint when the involved data changes.
+            * @param {String} newUsername - New selected account username.
+            * @param {String} oldUsername - Previous selected account username.
             */
-            'store.settings.webrtc.account.selected': {
-                deep: true,
-                handler: (account, oldAccount) => {
-                    console.trace("CHANGED:", account.username, oldAccount.username)
-                    if (account.username && account.password) {
-                        this.app.logger.debug(`${this}selected account changed; reconnecting...`)
-                        // Give the data store a chance to update.
-                        Vue.nextTick(() => {
-                            this.app.modules.calls.connect({register: true})
-                        })
+            'store.settings.webrtc.account.selected.username': async(newUsername, oldUsername) => {
+                const toggle = this.app.state.settings.webrtc.toggle
 
-                    } else {
-                        this.app.modules.calls.disconnect(false)
-                    }
-                },
-            },
-            /**
-            * Update the extension tab script status.
-            * @param {Boolean} enabled - Whether WebRTC is being enabled.
-            */
-            'store.settings.webrtc.enabled': (enabled) => {
-                this.app.emit('bg:tabs:update_contextmenus', {}, true)
+                if (toggle && !this.app.state.settings.webrtc.enabled) {
+                    await this.app.setState({settings: {webrtc: {enabled: true}}}, {persist: true})
+                }
+
+                if (newUsername) {
+                    this.app.logger.debug(`${this}account selection watcher: ${oldUsername} => ${newUsername}`)
+                    // Give the data store a chance to update.
+                    this.app.modules.calls.connect({register: this.app.state.settings.webrtc.enabled})
+                } else {
+                    // Unset the selected account triggers an account reset.
+                    this.app.modules.calls.disconnect(false)
+                    this.app.emit('bg:availability:account_reset', {}, true)
+                }
             },
             /**
             * Read the devices list as soon there is media permission
@@ -210,7 +208,22 @@ class ModuleSettings extends Module {
             * in the vault, so the vault must be open at this point.
             */
             'store.settings.webrtc.media.permission': () => {
-                if (this.app.state.user.authenticated) this.app.devices.verifySinks()
+                this.app.devices.verifySinks()
+            },
+            /**
+            * Update the extension tab script status.
+            * @param {Boolean} enabled - Whether WebRTC is being enabled.
+            */
+            'store.settings.webrtc.toggle': (enabled) => {
+                this.app.emit('bg:tabs:update_contextmenus', {}, true)
+
+                if (!enabled) {
+                    // Don't make it a habit to trigger a second watcher by
+                    // modifying data here, but in this case it's justified
+                    // because we actually mean clearing up the selected account
+                    // when disabling WebRTC.
+                    this.app.emit('bg:availability:account_reset', {}, true)
+                }
             },
         }
     }

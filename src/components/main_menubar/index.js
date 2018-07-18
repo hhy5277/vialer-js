@@ -10,7 +10,7 @@ module.exports = (app) => {
             }
         },
         methods: Object.assign({
-            classes: function(block) {
+            classes: function(block, transferHint) {
                 let classes = {}
                 // We assume here that a block is always an option. Change
                 // this logic if other kind of blocks are required.
@@ -25,9 +25,7 @@ module.exports = (app) => {
                 } else if (block === 'calls') {
                     classes.disabled = !this.app.online
                     classes['calls-active'] = this.callOngoing
-                } else if (block === 'contacts') {
-                    classes.hint = (this.transferStatus === 'select')
-                } else if (block === 'queues') {
+                } else if (transferHint) {
                     classes.hint = (this.transferStatus === 'select')
                 }
 

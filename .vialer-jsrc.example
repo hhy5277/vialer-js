@@ -2,10 +2,10 @@
     "brands": {
         "bologna": {
             "colors": {
-                "brand-color": "#0a5575",
-                "brand-variation-color": "#f98644",
+                "brand-color": "#2e3547",
+                "brand-variation-color": "#f2cc10",
                 "green-color": "#28ca42",
-                "grey-color": "#7eacac",
+                "grey-color": "#888",
                 "orange-color": "#f98644",
                 "primary-color": "#3c3c50",
                 "red-color": "#da534F"
@@ -36,6 +36,10 @@
             },
             "permissions": "",
             "sip_endpoint": "",
+            "stun": [
+                "stun3.l.google.com:19302",
+                "stun4.l.google.com:19302"
+            ],
             "store": {
                 "chrome": {
                     "clientId": "",
@@ -82,102 +86,6 @@
                     "email": "",
                     "phone": "",
                     "website": "https://vialer-js.io"
-                }
-            }
-        },
-        "vialer": {
-            "colors": {
-                "brand-color": "#f05a29",
-                "brand-variation-color": "#f98644",
-                "green-color": "#28ca42",
-                "grey-color": "#999",
-                "orange-color": "#f98644",
-                "primary-color": "#3c3c50",
-                "red-color": "#da534F"
-            },
-            "modules": {
-                "builtin": {
-                    "bg": {
-                        "availability": {
-                            "adapter": "vialer-js-availability-voipgrid"
-                        },
-                        "contacts": {
-                            "providers": ["vialer-js-contacts-voipgrid"]
-                        },
-                        "user": {
-                            "adapter": "vialer-js-user-voipgrid"
-                        }
-                    },
-                    "fg": {}
-                },
-                "custom": {
-                    "bg": [
-                        {
-                            "module": "vialer-js-module-queues/src/js/bg",
-                            "name": "queues"
-                        }
-                    ],
-                    "fg": [
-                        {
-                            "module": "vialer-js-module-queues/src/js/fg",
-                            "name": "queues"
-                        }
-                    ]
-                }
-            },
-            "name": {
-                "alpha": "Vialer-alpha",
-                "beta": "Vialer-beta",
-                "production": "Vialer"
-            },
-            "permissions": "https://partner.voipgrid.nl/",
-            "sip_endpoint": "websocket.voipgrid.nl",
-            "telemetry": {
-                "analytics_id": {
-                    "chrome": "",
-                    "edge": "",
-                    "electron": "",
-                    "firefox": "",
-                    "webview": ""
-                },
-                "sentry": {
-                    "apiKey": "",
-                    "dsn": "",
-                    "host": "",
-                    "org": "",
-                    "project": ""
-                }
-            },
-            "store": {
-                "chrome": {
-                    "clientId": "",
-                    "clientSecret": "",
-                    "extensionId_alpha": "",
-                    "extensionId_beta": "",
-                    "extensionId_production": "",
-                    "refreshToken": ""
-                },
-                "firefox": {
-                    "gecko": {
-                        "id_alpha": "",
-                        "id_beta": "",
-                        "id_production": "",
-                        "strict_min_version": ""
-                    },
-                    "apiKey": "",
-                    "apiSecret": ""
-                }
-            },
-            "vendor": {
-                "name": "Vialer",
-                "portal": {
-                    "name": "portal",
-                    "url": "https://partner.voipgrid.nl/"
-                },
-                "support": {
-                    "email": "support@voipgrid.nl",
-                    "phone": "267",
-                    "website": "https://wiki.voipgrid.nl/index.php/Browser_Plugins"
                 }
             }
         }

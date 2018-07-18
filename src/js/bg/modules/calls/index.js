@@ -327,7 +327,7 @@ class ModuleCalls extends Module {
 
         this.ua.on('unregistered', () => {
             this.app.setState({calls: {ua: {status: this.ua.isConnected() ? 'connected' : 'disconnected'}}})
-            this.app.logger.info(`${this}unregistered from ${this._uaOptions.wsServers}; back to ${this.app.state.calls.ua.status} status`)
+            this.app.logger.debug(`${this}unregistered from ${this._uaOptions.wsServers}`)
         })
 
 
@@ -336,7 +336,6 @@ class ModuleCalls extends Module {
             this.app.logger.info(`${this}connected to ${this._uaOptions.wsServers}`)
             // Reset the retry interval timer..
             this.retry = Object.assign({}, this.retryDefault)
-            if (resolve) resolve()
         })
 
 
@@ -398,6 +397,11 @@ class ModuleCalls extends Module {
                     video: false,
                 },
                 modifiers: [this._formatSdp.bind(this)],
+                peerConnectionOptions: {
+                    rtcConfiguration: {
+                        iceServers: this.app.state.settings.webrtc.stun.map((i) => ({urls: i})),
+                    },
+                },
             },
             traceSip: false,
             userAgentString: this._userAgent(),
@@ -722,13 +726,13 @@ class ModuleCalls extends Module {
         return new Promise((resolve, reject) => {
             // Reconnect when already connected.
             if (this.ua && this.ua.isConnected()) {
-                this.app.logger.info(`${this}already connected; disconnecting`)
+                this.app.logger.debug(`${this}closing existing connection`)
                 this.disconnect(true)
                 return
             }
 
             this._uaOptions = this.__uaOptions(account, register)
-            this.app.logger.info(`${this}connecting to ${this._uaOptions.wsServers} (register: ${this._uaOptions.register})`)
+            this.app.logger.debug(`${this}connecting to ${this._uaOptions.wsServers} (register: ${this._uaOptions.register})`)
             // Login with the WebRTC account or platform account.
             if (!this._uaOptions.authorizationUser || !this._uaOptions.password) {
                 this.app.logger.error(`${this}cannot connect without username and password`)
@@ -790,7 +794,6 @@ class ModuleCalls extends Module {
         if (reconnect) this.retry.timeout = 0
         if (this.ua && this.ua.isConnected()) {
             this.ua.stop()
-            this.app.logger.debug(`${this}ua disconnected`)
         }
     }
 

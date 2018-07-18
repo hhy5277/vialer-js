@@ -1,3 +1,9 @@
+@keyframes blink {
+    0% {opacity: .2;}
+    20% {opacity: 1;}
+    100% {opacity: .2;}
+}
+
 @keyframes grow {
     0% {
         display: none;

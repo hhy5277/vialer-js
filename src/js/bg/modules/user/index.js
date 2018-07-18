@@ -26,16 +26,23 @@ class ModuleUser extends Module {
         this.adapter = new UserAdapter(app)
         // Other implementation may use other user identifiers than email,
         // that's why the main event uses `username` instead of `email`.
-        this.app.on('bg:user:login', this.adapter.login.bind(this))
-        this.app.on('bg:user:logout', this.adapter.logout.bind(this))
-        this.app.on('bg:user:unlock', this.adapter.unlock.bind(this))
+        this.app.on('bg:user:login', (...args) => {
+            try {this.adapter.login(...args)} catch (err) {console.trace(err)}
+        })
+        this.app.on('bg:user:logout', (...args) => {
+            try {this.adapter.logout(...args)} catch (err) {console.trace(err)}
+        })
+
+        this.app.on('bg:user:unlock', (...args) => {
+            try {this.adapter.unlock(...args)} catch (err) {console.trace(err)}
+        })
 
         this.app.on('bg:user:set_session', ({session}) => {
-            app.setSession(session)
+            try {app.setSession(session)} catch (err) {console.trace(err)}
         })
 
         this.app.on('bg:user:remove_session', ({session}) => {
-            app.removeSession(session)
+            try {app.removeSession(session)} catch (err) {console.trace(err)}
         })
     }
 

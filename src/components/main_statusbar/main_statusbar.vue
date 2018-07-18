@@ -14,10 +14,7 @@
                 <icon class="warning" name="dnd" v-else-if="dnd"/>
                 <icon class="ok" name="softphone" v-else-if="ua.status === 'registered'"/>
             </template>
-            <template v-else>
-                <icon v-if="ua.status !== 'connected'" class="error" name="user" />
-                <icon v-else class="ok" name="user" />
-            </template>
+            <icon name="user" v-else />
         </span>
 
         <span class="username">{{user.username}}</span>

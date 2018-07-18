@@ -95,7 +95,12 @@ class AppForeground extends App {
                     // Keep track of the popup's visibility status by
                     // opening a long-lived connection to the background.
                     chrome.runtime.connect({name: 'vialer-js'})
+                    // This check is also required in the foreground, since
+                    // the popup opens a popout which is the only way an
+                    // extension can be given permission.
+                    this.__initMedia()
                 }
+
             },
         })
     }

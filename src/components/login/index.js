@@ -51,7 +51,8 @@ module.exports = (app) => {
             removeSession: function(session) {
                 app.emit('bg:user:remove_session', {session})
             },
-            selectSession: function(session) {
+            selectSession: function(session = null) {
+                this.password = ''
                 app.emit('bg:user:set_session', {session})
             },
         }, app.helpers.sharedMethods()),
@@ -64,6 +65,12 @@ module.exports = (app) => {
             url: 'settings.platform.url',
             user: 'user',
             vendor: 'app.vendor',
+        },
+        updated: function() {
+            // Validation needs to be reset after an update, so
+            // the initial validation is only done after a user
+            // action.
+            this.$v.$reset()
         },
         validations: function() {
             // Bind the API response message to the validator $params.

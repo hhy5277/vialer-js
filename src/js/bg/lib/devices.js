@@ -4,7 +4,7 @@ class Devices {
     */
     constructor(app) {
         this.app = app
-        this.app.on('unlocked', this.verifySinks.bind(this))
+
         // Detect changes in connected devices while running.
         if (this.app.env.isBrowser) {
             navigator.mediaDevices.ondevicechange = async(event) => {
@@ -124,7 +124,7 @@ class Devices {
 
         storedDevices.ready = valid
         this.app.setState(storedDevices, {path: 'settings.webrtc.devices'})
-        this.app.logger.debug(`${this}validated sinks (${valid})`)
+        this.app.logger.debug(`${this}audio sinks are valid: ${valid ? 'yes' : 'no'}`)
         return valid
     }
 

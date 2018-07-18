@@ -6,6 +6,9 @@ module.exports = (app) => {
         computed: app.helpers.sharedComputed(),
         mounted: function() {
             app.setState({settings: {webrtc: {enabled: true}}}, {persist: true})
+            // Reset validation, so it may not be triggered when
+            // the platform service retrieves account choices.
+            this.$v.$reset()
         },
         render: templates.wizard_step_voipaccount.r,
         staticRenderFns: templates.wizard_step_voipaccount.s,

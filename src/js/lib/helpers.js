@@ -188,10 +188,28 @@ function helpers(app) {
                 // value `null` and an empty string are not allowed.
                 if (number === null || number === '') return false
                 if (this.callingDisabled) return false
+
                 app.emit('bg:calls:call_create', {number, start, transfer})
                 return number
             },
             getTranslations: _helpers.getTranslations,
+            isTransferTarget: function(contact, number) {
+                let numbers = []
+                const calls = this.$store.calls.calls
+                for (let callId of Object.keys(calls)) {
+                    numbers.push(parseInt(calls[callId].number))
+                }
+
+                if (contact) {
+                    for (const contactId of Object.keys(contact.endpoints)) {
+                        if (numbers.includes(contact.endpoints[contactId].number)) return false
+                    }
+                } else if (number) {
+                    if (numbers.includes(number)) return false
+                }
+
+                return true
+            },
             openPlatformUrl: function(path = '') {
                 app.emit('bg:user:update-token', {
                     callback: ({token}) => {
@@ -263,14 +281,6 @@ function helpers(app) {
             },
             minutes: function() {
                 return Math.trunc((this.call.timer.current - this.call.timer.start) / 1000 / 60) % 60
-            },
-            numbersOngoing: function() {
-                let numbers = []
-                const calls = this.$store.calls.calls
-                for (let callId of Object.keys(calls)) {
-                    numbers.push(parseInt(calls[callId].number))
-                }
-                return numbers
             },
             seconds: function() {
                 return Math.trunc((this.call.timer.current - this.call.timer.start) / 1000) % 60

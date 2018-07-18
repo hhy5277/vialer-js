@@ -56,7 +56,7 @@ class ModuleAvailability extends Module {
     * Call for platform data from the provider.
     */
     async _platformData() {
-        if (this.adapter) this.adapter._platformData()
+        if (this.adapter) await this.adapter._platformData()
     }
 
 
@@ -67,7 +67,7 @@ class ModuleAvailability extends Module {
     */
     _watchers() {
         let adapterWatchers
-        if (this.adapter) adapterWatchers = this.adapter._watchers()
+        if (this.adapter && this.adapter._watchers) adapterWatchers = this.adapter._watchers()
         return Object.assign({
             'store.availability.dnd': (dndEnabled) => {
                 this.app.modules.ui.menubarState()

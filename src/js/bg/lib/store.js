@@ -53,7 +53,8 @@ class Store {
     * Multiple users can login the plugin. To prevent state
     * collisioning, each user has its own state namespace, e.g.
     * `myuser@domain/state`. This method returns all available
-    * sessions and a preferred one.
+    * sessions and a preferred one. The `active = null` means
+    * that no session is selected.
     * @returns {Object} - The store sessions.
     */
     findSessions() {

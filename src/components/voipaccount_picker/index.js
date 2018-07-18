@@ -1,6 +1,4 @@
 module.exports = (app) => {
-
-    const emptyAccount = {id: null, name: null, password: null, username: null}
     /**
     * @memberof fg.components
     */
@@ -18,6 +16,18 @@ module.exports = (app) => {
                 app.emit('bg:availability:platform_data')
             },
         }, app.helpers.sharedMethods()),
+        mounted: function() {
+            if (this.v) this.v.$touch()
+            if (this.v) this.v.$reset()
+
+            // Small hack to satisfy validation when the account options
+            // are already loaded, before the user enters this component
+            // in the wizard.
+            if (this.settings.webrtc.account.options.length) {
+                const selected = this.settings.webrtc.account.options[0]
+                Object.assign(app.state.settings.webrtc.account.selected, selected)
+            }
+        },
         props: {
             info: {default: true},
             label: {default: ''},
@@ -52,8 +62,9 @@ module.exports = (app) => {
                     if (match) {
                         Object.assign(app.state.settings.webrtc.account.selected, match)
                     }
-                } else if (options.length) {
-                    // Nothing selected; but there are available options. Select the first option.
+                } else if (options.length && app.state.settings.webrtc.enabled) {
+                    // Nothing selected; but there are available options.
+                    // Select the first option when WebRTC is enabled.
                     const selected = app.utils.copyObject(this.settings.webrtc.account.options[0])
                     Object.assign(app.state.settings.webrtc.account.selected, selected)
                 }
@@ -61,17 +72,15 @@ module.exports = (app) => {
                 if (this.v) this.v.$touch()
             },
             /**
-            * Respond to WebRTC enabled switch by (un)setting the foreground
-            * account state, so that the connection will update when the
-            * whole settings object is pushed to the background.
+            * Preset the first available account when WebRTC is switched on.
+            * A similar background watcher handles resetting the account when
+            * WebRTC is turned off.
             * @param {Object} enabled - New checkbox/switch value.
             */
-            'settings.webrtc.enabled': function(enabled) {
-                if (enabled) {
+            'settings.webrtc.toggle': function(enabled) {
+                if (enabled && this.settings.webrtc.account.options.length) {
                     const selected = app.utils.copyObject(this.settings.webrtc.account.options[0])
                     Object.assign(app.state.settings.webrtc.account.selected, selected)
-                } else {
-                    Object.assign(app.state.settings.webrtc.account.selected, emptyAccount)
                 }
 
                 if (this.v) this.v.$touch()

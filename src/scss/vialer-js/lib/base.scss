@@ -109,3 +109,71 @@ video {
 .spacer-bottom-2x {margin-bottom: $spacer * 2;}
 .spacer-top-1x {margin-top: $spacer;}
 .spacer-top-2x {margin-top: $spacer * 2;}
+
+// General loading indicator.
+.loading-indicator {
+    color: $grey-color-light;
+    display: flex;
+    flex-direction: column;
+    margin: $spacer * 10 0;
+    width: 100%;
+
+    div {
+        align-self: center;
+
+        svg {
+            @include icon-size($spacer * 9);
+        }
+
+        &.text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: $spacer * 3;
+
+            // Animated loading dots.
+            span {
+                animation-duration: 1.4s;
+                animation-fill-mode: both;
+                animation-iteration-count: infinite;
+                animation-name: blink;
+
+                &:nth-child(2) {animation-delay: .2s;}
+                &:nth-child(3) {animation-delay: .4s;}
+            }
+        }
+    }
+}
+
+.no-results-indicator {
+    color: $grey-color-light;
+    display: flex;
+    flex-direction: column;
+    margin-top: $spacer * 5;
+    width: 100%;
+
+    div {
+        align-self: center;
+
+        svg {
+            @include icon-size($spacer * 6);
+        }
+
+        &.text {
+            font-size: 1.4rem;
+            font-style: italic;
+            margin-top: $spacer;
+        }
+    }
+}
+
+::-webkit-scrollbar {
+    width: $spacer * 1.25;
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: $brand-color;
+}
